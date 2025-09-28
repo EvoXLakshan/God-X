@@ -87,12 +87,32 @@ else
     exit 1
 fi
 
-# Verify the templates directory exists
-if [ -d "/home/$USERNAME/God-X/templates" ]; then
-    echo "Templates directory found."
+# Create templates directory if it doesn't exist and move HTML files
+echo "Setting up templates directory..."
+cd /home/$USERNAME/God-X
+if [ ! -d "templates" ]; then
+    mkdir templates
+    echo "Created templates directory"
+fi
+
+# Move HTML files to templates directory if they exist in root
+if [ -f "index.html" ]; then
+    mv index.html templates/
+    echo "Moved index.html to templates directory"
+fi
+
+if [ -f "result.html" ]; then
+    mv result.html templates/
+    echo "Moved result.html to templates directory"
+fi
+
+# Verify the templates directory has the required files
+if [ -f "templates/index.html" ] && [ -f "templates/result.html" ]; then
+    echo "Templates directory setup completed successfully."
 else
-    echo "Templates directory not found. Exiting."
-    exit 1
+    echo "Warning: Required HTML files not found in templates directory."
+    echo "Files in God-X directory:"
+    ls -la /home/$USERNAME/God-X/
 fi
 
 # Set up a virtual environment
