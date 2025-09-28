@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TRAFFIC-X • Usage Details</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    @keyframes pixelMove {
+      0% { background-position: 0 0; }
+      100% { background-position: 50px 50px; }
+    }
+
+    :root{
+      --primary: #641B9F;
+      --secondary: #263D9B;
+      --accent: #009688;
+      --glass: rgba(255,255,255,0.95);
+      --glass-2: rgba(248, 249, 250, 0.9);
+      --text: #2c3e50;
+      --shadow: 0 10px 30px rgba(100, 27, 159, 0.1);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Exo 2', sans-serif;
+      color: var(--text);
+      background-color: #ffffff;
+      background-image: 
+        radial-gradient(#e0e0e0 1px, transparent 1px),
+        radial-gradient(#f0f0f0 1px, transparent 1px);
+      background-size: 40px 40px, 80px 80px;
+      background-position: 0 0, 20px 20px;
+      animation: pixelMove 20s linear infinite;
+      min-height: 100vh;
+    }
+
+    .pixel-bat {
+      position: absolute;
+      font-size: 20px;
+      opacity: 0.08;
+      animation: float 6s ease-in-out infinite;
+      z-index: 0;
+      color: #641B9F;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;font-size:2rem;font-weight:900;letter-spacing:1px;
+      font-family: 'Orbitron', monospace;
+      background: linear-gradient(135deg, #641B9F, #263D9B, #009688);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand i{font-size:2rem}
+    .actions{display:flex;gap:10px}
+    .btn{
+      background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+      color:#fff; border:none; border-radius:12px;
+      padding:12px 18px; cursor:pointer; box-shadow: var(--shadow); 
+      font-weight:600; font-family: 'Exo 2', sans-serif;
+      transition: all 0.3s ease;
+    }
+    .btn.outline{ 
+      background: transparent; 
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+    .btn:hover{ 
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(100, 27, 159, 0.3);
+    }
+
+    .grid{
+      display:grid; gap:25px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+    @media (max-width: 992px){ .grid{ grid-template-columns:repeat(2,1fr);} }
+    @media (max-width: 600px){ .grid{ grid-template-columns:1fr;} }
+
+    .card{
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      border-radius: 20px;
+      padding: 25px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+    }
+
+    .card:hover{ 
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(100, 27, 159, 0.15);
+    }
+
+    .card h3{
+      margin:0 0 18px; font-size:1.3rem; display:flex; align-items:center; gap:10px; 
+      font-weight:700; font-family: 'Orbitron', monospace;
+      color: var(--text);
+    }
+    .card h3 i{ 
+      font-size:1.4rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .metric{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      background: var(--glass-2); border-radius:12px; padding:12px 15px; margin:10px 0;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    .metric .label{ display:flex; align-items:center; gap:8px; font-weight:600 }
+    .badge{
+      background:#ffffff; border:1px solid #e9ecef; padding:6px 12px; border-radius:20px; 
+      font-size:12px; font-weight:600; color: var(--text);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .progress-container{
+      background: #e9ecef;
+      border-radius: 8px; height:12px; overflow:hidden; margin-top:10px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .progress-bar{
+      height: 100%; width: 0%; 
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+      transition: width .8s ease, background-color .4s ease;
+      border-radius: 8px;
+    }
+
+    /* Toggle (user config enable/disable) */
+    .toggle{
+      width:50px; height:26px; background:#e9ecef; border-radius:999px; position:relative; cursor:pointer; flex-shrink:0;
+      border: 2px solid #dee2e6;
+      transition: all 0.3s ease;
+    }
+    .toggle::after{
+      content:""; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:#fff; 
+      transition:left .3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .toggle.active{ background: var(--primary); border-color: var(--primary); }
+    .toggle.active::after{ left:25px; }
+
+    .muted{ opacity:.7; font-size:13px; color: #6c757d; }
+
+    /* Chart containers */
+    .chart{ width:100%; height:260px; border-radius: 12px; overflow: hidden; }
+    .chart.small{ height:220px }
+
+    .pill{
+      position:absolute; top:15px; right:15px; font-size:12px; padding:6px 12px; border-radius:20px;
+      background:#ffffff; border:1px solid #e9ecef; font-weight:600;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .ok{ color:#28a745 } .warn{ color:#ffc107 } .danger{ color:#dc3545 }
+
+    .footer{
+      text-align:center; margin-top:40px; color:#6c757d; font-size:14px;
+      font-family: 'Exo 2', sans-serif;
+    }
+
+    .update-by {
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Pixel Bats Background Elements -->
+  <div class="pixel-bat" style="top: 5%; left: 3%; animation-delay: 0s;">🦇</div>
+  <div class="pixel-bat" style="top: 15%; right: 5%; animation-delay: 1s;">🦇</div>
+  <div class="pixel-bat" style="top: 70%; left: 2%; animation-delay: 2s;">🦇</div>
+  <div class="pixel-bat" style="top: 45%; right: 8%; animation-delay: 3s;">🦇</div>
+
+  <div class="container">
+    <!-- Top -->
+    <div class="topbar">
+      <div class="brand">
+        <i class="fa-solid fa-traffic-light"></i> TRAFFIC-X
+      </div>
+      <div class="actions">
+        <a class="btn outline" href="/"><i class="fa-solid fa-arrow-left"></i> Back</a>
+        <a class="btn" href="https://github.com/Tyga-x/Traffic-X" target="_blank"><i class="fa-brands fa-github"></i></a>
+      </div>
+    </div>
+
+    <!-- GRID (3 x 2 like index) -->
+    <div class="grid">
+
+      <!-- User Overview -->
+      <div class="card">
+        <span class="pill"><i class="fa-regular fa-user"></i> {{ email }}</span>
+        <h3><i class="fa-solid fa-id-badge"></i>User Overview</h3>
+
+        <div class="metric">
+          <div class="label"><i class="fa-solid fa-shield-heart"></i> Config Status</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span id="status-text" class="badge">—</span>
+            <div id="config-toggle" class="toggle"></div>
+          </div>
+        </div>
+
+        <div class="metric">
+          <div class="label"><i class="fa-solid fa-calendar-xmark"></i> Expiry</div>
+          <div class="badge" id="expiry-badge">{{ expiry_date }}</div>
+        </div>
+
+        <div class="muted">Tip: toggle will POST to <code>/update-status</code>.</div>
+      </div>
+
+      <!-- Usage (numbers + progress) -->
+      <div class="card">
+        <h3><i class="fa-solid fa-gauge-high"></i>Usage</h3>
+
+        <div class="metric">
+          <div class="label"><i class="fa-solid fa-upload"></i> Uploaded</div>
+          <div class="badge">{{ up }}</div>
+        </div>
+        <div class="progress-container"><div id="uploaded-bar" class="progress-bar"></div></div>
+
+        <div class="metric">
+          <div class="label"><i class="fa-solid fa-download"></i> Downloaded</div>
+          <div class="badge">{{ down }}</div>
+        </div>
+        <div class="progress-container"><div id="downloaded-bar" class="progress-bar"></div></div>
+
+        <div class="metric">
+          <div class="label"><i class="fa-solid fa-hard-drive"></i> Limit</div>
+          <div class="badge">{{ total }}</div>
+        </div>
+        <div class="progress-container"><div id="limit-bar" class="progress-bar"></div></div>
+      </div>
+
+      <!-- Expiry Gauge (days left) -->
+      <div class="card">
+        <h3><i class="fa-regular fa-clock"></i>Days to Expiry</h3>
+        <div id="expiry-gauge" class="chart small"></div>
+        <div class="muted" id="expiry-desc">—</div>
+      </div>
+
+      <!-- Summary Chart (Upload/Download vs Remaining) -->
+      <div class="card">
+        <h3><i class="fa-solid fa-chart-line"></i>Summary (Live)</h3>
+        <div id="summary-chart" class="chart"></div>
+        <div class="muted">Shows uploaded & downloaded compared to remaining quota.</div>
+      </div>
+
+      <!-- Breakdown Donut -->
+      <div class="card">
+        <h3><i class="fa-solid fa-chart-pie"></i>Usage Breakdown</h3>
+        <div id="breakdown" class="chart small"></div>
+      </div>
+
+      <!-- Quick Info -->
+      <div class="card">
+        <h3><i class="fa-solid fa-circle-info"></i>Quick Info</h3>
+        <div class="metric">
+          <div class="label"><i class="fa-solid fa-signal"></i> Total Used</div>
+          <div class="badge" id="total-used-badge">—</div>
+        </div>
+        <div class="metric">
+          <div class="label"><i class="fa-solid fa-box-archive"></i> Remaining</div>
+          <div class="badge" id="remaining-badge">—</div>
+        </div>
+        <div class="metric">
+          <div class="label"><i class="fa-solid fa-percent"></i> Utilization</div>
+          <div class="badge" id="utilization-badge">—</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      © 2025 Traffic-X. All rights reserved.
+      <div class="update-by">Update By Lakshan</div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Helpers to parse human-readable sizes from Flask (e.g., "4.2 GB") =====
+    function parseNum(str){ if (!str) return 0; const m=String(str).match(/[\d.]+/); return m?parseFloat(m[0]):0; }
+    function unit(str){ if (!str) return ""; const m=String(str).match(/[a-zA-Z]+/g); return m?m.join(""):""; }
+    function toMB(value, u){
+      const U = (u||"").toUpperCase();
+      if (U.includes("TB")) return value*1024*1024;
+      if (U.includes("GB")) return value*1024;
+      if (U.includes("MB")) return value;
+      if (U.includes("KB")) return value/1024;
+      return value; // assume MB
+    }
+
+    // ===== Read values from Jinja =====
+    const upStr = "{{ up }}";
+    const downStr = "{{ down }}";
+    const totalStr = "{{ total }}";
+    const userStatus = ("{{ user_status }}".trim().toLowerCase() === "enabled");
+    const expiryStr = "{{ expiry_date }}";
+
+    // Convert to MB for math
+    let upMB   = toMB(parseNum(upStr), unit(upStr));
+    let downMB = toMB(parseNum(downStr), unit(downStr));
+    let totalMB= toMB(parseNum(totalStr), unit(totalStr));
+    let usedMB = upMB + downMB;
+    let remainingMB = Math.max(totalMB - usedMB, 0);
+    let utilization = totalMB>0 ? (usedMB/totalMB*100) : 0;
+
+    // ===== Update quick badges =====
+    const fmt = (mb) => {
+      if (mb >= 1024*1024) return (mb/1024/1024).toFixed(2)+" TB";
+      if (mb >= 1024) return (mb/1024).toFixed(2)+" GB";
+      return mb.toFixed(2)+" MB";
+    };
+    document.getElementById("total-used-badge").textContent = fmt(usedMB);
+    document.getElementById("remaining-badge").textContent  = fmt(remainingMB);
+    document.getElementById("utilization-badge").textContent = utilization.toFixed(1)+"%";
+
+    // ===== Progress bars =====
+    function setBar(id, valueMB, maxMB){
+      const el = document.getElementById(id);
+      if (!el || maxMB<=0) return;
+      const p = Math.max(0, Math.min(100, valueMB/maxMB*100));
+      el.style.width = p + "%";
+      // color ramp
+      if (p <= 50) el.style.background = "linear-gradient(90deg, #641B9F, #263D9B)";
+      else if (p <= 80) el.style.background = "linear-gradient(90deg, #FFD700, #FFA500)";
+      else if (p <= 98) el.style.background = "linear-gradient(90deg, #FFA500, #FF6347)";
+      else el.style.background = "linear-gradient(90deg, #FF6347, #DC143C)";
+    }
+    setTimeout(()=> {
+      setBar("uploaded-bar", upMB, totalMB);
+      setBar("downloaded-bar", downMB, totalMB);
+      setBar("limit-bar", usedMB, totalMB);
+    }, 300);
+
+    // ===== Toggle handling =====
+    const toggle = document.getElementById("config-toggle");
+    const statusText = document.getElementById("status-text");
+    function applyStatusUI(enabled){
+      statusText.textContent = enabled ? "Enabled" : "Disabled";
+      statusText.style.color = enabled ? "#28a745" : "#dc3545";
+      toggle.classList.toggle("active", enabled);
+    }
+    applyStatusUI(userStatus);
+
+    toggle.addEventListener("click", () => {
+      const next = !toggle.classList.contains("active");
+      applyStatusUI(next);
+      fetch("/update-status", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ status: next })
+      }).catch(()=>{});
+    });
+
+    // ===== Expiry gauge & copy =====
+    function daysUntil(dateStr){
+      const d = new Date(dateStr.replace(" ", "T")+"Z"); // treat as UTC
+      if (isNaN(d.getTime())) return null;
+      const now = new Date();
+      return Math.ceil((d.getTime()-now.getTime())/(1000*60*60*24));
+    }
+    const dLeft = daysUntil(expiryStr);
+    const expiryDesc = document.getElementById("expiry-desc");
+    if (dLeft===null){
+      expiryDesc.textContent = "Expiry date unavailable or invalid.";
+    } else if (dLeft < 0){
+      expiryDesc.innerHTML = `<span class="danger"><i class="fa-solid fa-circle-exclamation"></i> Expired ${Math.abs(dLeft)} day(s) ago</span>`;
+    } else {
+      expiryDesc.innerHTML = `<span class="${dLeft<=3?'danger': dLeft<=7?'warn':'ok'}">${dLeft} day(s) remaining</span>`;
+    }
+
+    // ===== Charts (ApexCharts) =====
+    // Summary (columns for Upload/Download + line for Remaining)
+    const summaryOptions = {
+      chart: { 
+        type: 'line', 
+        height: 260, 
+        foreColor:'#2c3e50', 
+        toolbar: { show: false },
+        fontFamily: 'Exo 2, sans-serif'
+      },
+      stroke: { width: [0, 0, 3] },
+      series: [
+        { name:'Uploaded',  type:'column', data:[upMB] },
+        { name:'Downloaded',type:'column', data:[downMB] },
+        { name:'Remaining', type:'line',   data:[Math.max(remainingMB,0)] },
+      ],
+      colors: ['#641B9F','#263D9B','#009688'],
+      xaxis: { categories: ['Current'], labels:{style:{colors:'#6c757d', fontFamily: 'Exo 2, sans-serif'}} },
+      yaxis: { 
+        labels:{ 
+          formatter:(v)=> v>=1024? (v/1024).toFixed(1)+' GB' : v.toFixed(0)+' MB',
+          style: { colors: '#6c757d', fontFamily: 'Exo 2, sans-serif' }
+        } 
+      },
+      plotOptions: { bar:{ columnWidth:'45%', borderRadius:6 } },
+      dataLabels: { enabled:false },
+      tooltip: { 
+        shared:true,
+        style: { fontFamily: 'Exo 2, sans-serif' },
+        y:{ formatter:(v)=> v>=1024? (v/1024).toFixed(2)+' GB' : v.toFixed(2)+' MB' }
+      },
+      grid: { borderColor: 'rgba(108, 117, 125, 0.1)' },
+      legend:{
+        position:'top',
+        fontFamily: 'Exo 2, sans-serif',
+        labels: { colors: '#2c3e50' }
+      }
+    };
+    new ApexCharts(document.querySelector("#summary-chart"), summaryOptions).render();
+
+    // Donut Breakdown (Up vs Down)
+    const breakdownOptions = {
+      chart: { 
+        type:'donut', 
+        height:220, 
+        foreColor:'#2c3e50', 
+        toolbar: { show: false },
+        fontFamily: 'Exo 2, sans-serif'
+      },
+      series: [ upMB, downMB ],
+      labels: ['Upload','Download'],
+      colors: ['#641B9F','#263D9B'],
+      dataLabels: { enabled:true, formatter:(v)=> v.toFixed(1)+'%', style: { fontFamily: 'Exo 2, sans-serif' } },
+      legend:{ 
+        position:'bottom',
+        fontFamily: 'Exo 2, sans-serif',
+        labels: { colors: '#2c3e50' }
+      },
+      tooltip:{
+        style: { fontFamily: 'Exo 2, sans-serif' },
+        y:{ formatter:(v)=> v>=1024? (v/1024).toFixed(2)+' GB' : v.toFixed(2)+' MB' }
+      },
+      stroke:{ width:0 },
+      plotOptions:{ pie:{ donut:{ size:'62%' } } }
+    };
+    new ApexCharts(document.querySelector("#breakdown"), breakdownOptions).render();
+
+    // Radial Bar Gauge (Days to Expiry)
+    let pct = 100;
+    if (dLeft!==null){
+      const clamp = (x,min,max)=> Math.max(min, Math.min(max, x));
+      pct = clamp( (1 - (dLeft/30))*100 , 0, 100);
+    }
+    const gaugeOptions = {
+      chart: { 
+        type:'radialBar', 
+        height:220, 
+        foreColor:'#2c3e50', 
+        toolbar: { show: false },
+        fontFamily: 'Exo 2, sans-serif'
+      },
+      series: [ pct ],
+      labels: ['Proximity to Expiry'],
+      colors: [ pct<60 ? '#28a745' : (pct<85 ? '#ffc107' : '#dc3545') ],
+      plotOptions:{
+        radialBar:{
+          hollow:{ size:'58%' },
+          dataLabels:{
+            name:{ 
+              fontSize:'14px',
+              fontFamily: 'Exo 2, sans-serif',
+              color: '#2c3e50'
+            },
+            value:{
+              formatter:(v)=> v.toFixed(0)+'%',
+              fontFamily: 'Exo 2, sans-serif',
+              color: '#2c3e50'
+            }
+          }
+        }
+      }
+    };
+    new ApexCharts(document.querySelector("#expiry-gauge"), gaugeOptions).render();
+  </script>
+</body>
+</html>
